@@ -8,6 +8,7 @@ module ci553.happyshop {
 
     opens ci553.happyshop;
     opens ci553.happyshop.client;
+    opens ci553.happyshop.catalogue;
     opens ci553.happyshop.client.customer;
     opens ci553.happyshop.client.picker;
     opens ci553.happyshop.client.orderDashboard;
