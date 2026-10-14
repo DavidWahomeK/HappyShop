@@ -1,6 +1,7 @@
 package ci553.happyshop.catalogue;
+import java.util.Collections;
 
-public class OrganizedTrolley {
+public class OrganizedTrolley extends Trolley {
     @Override
     public void addProduct(Product product) {
         Product existing = findById(product.getProductId());

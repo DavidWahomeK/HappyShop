@@ -7,6 +7,7 @@ import ci553.happyshop.storageAccess.DatabaseRW;
 import ci553.happyshop.orderManagement.OrderHub;
 import ci553.happyshop.utility.StorageLocation;
 import ci553.happyshop.utility.ProductListFormatter;
+import ci553.happyshop.catalogue.OrganizedTrolley;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
