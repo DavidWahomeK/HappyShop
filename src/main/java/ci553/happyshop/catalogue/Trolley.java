@@ -69,4 +69,12 @@ public class Trolley {
     public void clear() {
         products.clear();
     }
+    // This now gives total cost of everything within the trolley
+    public double getTotal() {
+        double total = 0;
+        for (Product p : products) {
+            total += p.getUnitPrice() * p.getOrderedQuantity();
+        }
+        return total;
+    }
 }
