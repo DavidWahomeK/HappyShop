@@ -42,6 +42,10 @@ public class CustomerClient extends Application {
         cusModel.cusView = cusView;
         cusView.start(window);
 
+        RemoveProductNotifier removeNotifier = new RemoveProductNotifier();
+        removeNotifier.cusView = cusView;
+        cusModel.removeProNotifier = removeNotifier;
+
         // Optional feature: Handling Stock Shortages at Checkout.
         // Code is commented out for now; students may explore this as an extension.
         //RemoveProductNotifier removeProductNotifier = new RemoveProductNotifier();

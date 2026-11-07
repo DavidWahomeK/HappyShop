@@ -20,26 +20,30 @@ import java.util.Map;
 public class CustomerModel {
     public CustomerView cusView; //part of MVC
     private DatabaseRW databaseRW; //Interface type, not specific implementation
-                                  //Benefits: Flexibility: Easily change the database implementation.
+    //Benefits: Flexibility: Easily change the database implementation.
 
     private Product searchResult =null; // product found from search
     private Trolley trolley =  new OrganizedTrolley(); // holds the products currently in the customer's trolley
 
+    // Adding notifier window for removed products.
+    // Assigned by CustomerClient; stays null in unit tests so no JavaFX window is created.
+    public RemoveProductNotifier removeProNotifier;
+
     // Data passed to CustomerView for UI updates (including search, trolley and receipt page)
     private String searchResultImageName = "imageHolder.jpg";
-                    // Image file name representing the current search result.
-                    // - Product image if a product is found
-                   // - Default placeholder image otherwise
+    // Image file name representing the current search result.
+    // - Product image if a product is found
+    // - Default placeholder image otherwise
     private String searchResultProductText = "No product has been searched yet";
-                  // Textual representation of the product from the search result.
-                  // - Shows product details (e.g. "0001, 40-inch TV, ...") if found
-                 // - Otherwise shows a status message
+    // Textual representation of the product from the search result.
+    // - Shows product details (e.g. "0001, 40-inch TV, ...") if found
+    // - Otherwise shows a status message
     private String trolleyContentsText = "";
-                 // Textual representation of current trolley contents,
-                 // used for display in the Trolley page
+    // Textual representation of current trolley contents,
+    // used for display in the Trolley page
     private String receiptContentsText = "";
-                 // Textual representation of the generated receipt after checkout,
-                // used for display in the Receipt page
+    // Textual representation of the generated receipt after checkout,
+    // used for display in the Receipt page
 
     // Dependency Injection via constructor
     public CustomerModel(DatabaseRW databaseRW){
@@ -106,6 +110,12 @@ public class CustomerModel {
                 OrderHub orderHub =OrderHub.getOrderHub();
                 Order theOrder = orderHub.newOrder(trolley.getProducts());
                 trolley.clear();
+
+                // Step 2c Close the notifier window if it is still showing from an earlier failed checkout
+                if(removeProNotifier != null){
+                    removeProNotifier.closeNotifierWindow();
+                }
+
                 trolleyContentsText ="";
                 searchResult = null;
                 searchResultProductText ="Thank you for shopping with us.";
@@ -117,23 +127,26 @@ public class CustomerModel {
                 );
                 System.out.println(receiptContentsText);
             }
-            else{ // Some products have insufficient stock — build an error message to inform the customer
+            // Step 2c some products have insufficient stock
+            else{ // Some products have insufficient stock
                 StringBuilder errorMsg = new StringBuilder();
                 for(Product p : insufficientProducts){
-                    errorMsg.append("\u2022 "+ p.getProductId()).append(", ")
+                    errorMsg.append("\u2022 " + p.getProductId()).append(", ")
                             .append(p.getProductDescription()).append(" (Only ")
                             .append(p.getStockQuantity()).append(" available, ")
                             .append(p.getOrderedQuantity()).append(" requested)\n");
+                    trolley.removeProduct(p.getProductId()); // remove it from the trolley
                 }
-                searchResult =null;
+                searchResult = null;
 
-                //TODO
-                // Add the following logic here:
-                // 1. Remove products with insufficient stock from the trolley.
-                // 2. Trigger a message window to notify the customer about the insufficient stock, rather than directly changing displayLaSearchResult.
-                //You can use the provided RemoveProductNotifier class and its showRemovalMsg method for this purpose.
-                //remember close the message window where appropriate (using method closeNotifierWindow() of RemoveProductNotifier class)
-                searchResultProductText = "Checkout failed due to insufficient stock for the following products:\n" + errorMsg.toString();
+                // Rebuild the trolley text so the UI matches the trolley
+                trolleyContentsText = trolley.getProducts().isEmpty()
+                        ? "" : ProductListFormatter.buildString(trolley.getProducts());
+                searchResultProductText = "Some products were removed from your trolley.\nSee the notice window.";
+
+                if(removeProNotifier != null){
+                    removeProNotifier.showRemovalMsg(errorMsg.toString());
+                }
                 System.out.println("stock is not enough");
             }
         }
@@ -163,10 +176,13 @@ public class CustomerModel {
         }
         return new ArrayList<>(grouped.values());
     }
-
+    // STEP 2d: also close the notifier window when the trolley is cancelled
     void cancel(){
         trolley.clear();
         trolleyContentsText ="";
+        if(removeProNotifier != null){
+            removeProNotifier.closeNotifierWindow();
+        }
         updateView();
     }
     void closeReceipt(){
@@ -187,9 +203,9 @@ public class CustomerModel {
         }
         cusView.update(searchResultImageName, searchResultProductText, trolleyContentsText, receiptContentsText);
     }
-     // extra notes:
-     //Path.toUri(): Converts a Path object (a file or a directory path) to a URI object.
-     //File.toURI(): Converts a File object (a file on the filesystem) to a URI object
+    // extra notes:
+    //Path.toUri(): Converts a Path object (a file or a directory path) to a URI object.
+    //File.toURI(): Converts a File object (a file on the filesystem) to a URI object
 
     //for test
     public Trolley getTrolley() {

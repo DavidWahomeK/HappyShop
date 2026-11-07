@@ -1,0 +1,11 @@
+Order ID: 4 
+State: COLLECTED
+OrderedDateTime: 2026-10-14 11:23:22 
+ProgressingDateTime: 2026-10-14 11:23:39
+CollectedDateTime: 2026-10-14 11:23:42
+Items:
+ 0003    Toaster            ( 1) £  19.99
+ 0003    Toaster            ( 1) £  19.99
+--------------------------------------------
+ Total                               £  39.98
+
