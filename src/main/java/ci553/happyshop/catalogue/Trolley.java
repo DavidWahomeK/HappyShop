@@ -69,6 +69,13 @@ public class Trolley {
     public void clear() {
         products.clear();
     }
+    /**
+     * Removes the whole line for this product ID, whatever its quantity.
+     * @return true if something was removed, false if the product was not in the trolley
+     */
+    public boolean removeProduct(String productId) {
+        return products.removeIf(p -> p.getProductId().equals(productId));
+    }
     // This now gives total cost of everything within the trolley
     public double getTotal() {
         double total = 0;
