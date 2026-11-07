@@ -38,4 +38,17 @@ public class OrganizedTrolleyTest {
         trolley.addProduct(makeProduct("0002", 5.5));
         assertEquals(25.5, trolley.getTotal(), 0.001);
     }
+
+    @Test
+    void removeProductRemovesWholeLine() {
+        Trolley trolley = new OrganizedTrolley();
+        Product p = makeProduct("0001", 10.0);
+        trolley.addProduct(p);
+        trolley.addProduct(p);
+        trolley.addProduct(makeProduct("0002", 5.0));
+        assertTrue(trolley.removeProduct("0001"));
+        assertEquals(1, trolley.getProducts().size());
+        assertEquals("0002", trolley.getProducts().get(0).getProductId());
+        assertFalse(trolley.removeProduct("9999"));
+    }
 }

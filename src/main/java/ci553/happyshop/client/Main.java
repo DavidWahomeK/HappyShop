@@ -94,6 +94,9 @@ public class Main extends Application {
         cusController.cusModel = cusModel;
         cusModel.cusView = cusView;
         cusView.start(new Stage());
+        RemoveProductNotifier removeNotifier = new RemoveProductNotifier();
+        removeNotifier.cusView = cusView;
+        cusModel.removeProNotifier = removeNotifier;
 
         // Optional feature: Handling Stock Shortages at Checkout.
         // Code is commented out for now; students may explore this as an extension.
